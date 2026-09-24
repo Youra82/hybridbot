@@ -1,0 +1,164 @@
+{
+    "exchange": "bitget",
+    "live_trading": false,
+    "live_trading_settings": {
+        "max_open_positions": 5,
+        "use_auto_optimizer_results": false,
+        "active_strategies": [
+            {
+                "symbol": "BTC/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "ETH/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "SOL/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "XRP/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "DOGE/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "LINK/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "AAVE/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "BNB/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "LTC/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "ATOM/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "NEAR/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "DOT/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "UNI/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "FIL/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "ARB/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            },
+            {
+                "symbol": "OP/USDT:USDT",
+                "timeframe": "1d",
+                "active": true
+            }
+        ]
+    },
+    "strategy_overrides": {},
+    "_optimization_settings_note": "backtest_lookback_weeks=12 statt zerobots 4 -- die aktive Watchlist ist ueberwiegend 1d, 4 Wochen waeren nur ~28 Kerzen (kaum ein Trade). Bei kuerzeren Timeframes in active_strategies ggf. wieder senken.",
+    "optimization_settings": {
+        "enabled": false,
+        "backtest_lookback_weeks": 8,
+        "schedule": {
+            "day_of_week": 6,
+            "hour": 15,
+            "minute": 0,
+            "interval": {
+                "value": 7,
+                "unit": "days"
+            }
+        },
+        "start_capital": 100,
+        "start_date": "2024-01-01",
+        "end_date": "auto",
+        "constraints": {
+            "max_drawdown_pct": 30
+        },
+        "smoothing_step_days": 2,
+        "smoothing_samples": 7,
+        "send_telegram_on_completion": true
+    },
+    "risk": {
+        "leverage": 10,
+        "risk_per_trade_pct": 1.0
+    },
+    "risk_manager": {
+        "max_concurrent_positions": 5,
+        "max_daily_loss_pct": 5.0,
+        "max_total_risk_pct": 6.0,
+        "min_adjusted_risk_pct": 0.1,
+        "max_consecutive_losses": 5,
+        "min_rolling_win_rate_pct": 25.0,
+        "min_trades_for_win_rate_check": 20
+    },
+    "_market_sense_note": "Globaler FALLBACK fuer Symbole ohne eigene configs/config_<SYM><TF>.json (siehe optimizer.py/run_pipeline.sh). Werte aus optimizer_MULTI_BTC-ETH-SOL-XRP-DOGE-LINK-AAVE-BNB_1d.json (reduzierter Suchraum, 100 Trials, 2026-09-10) -- Hold-out +13.43R/65 Trades, Generalisierungstest auf 8 neuen Symbolen +36.50R/166 Trades. Siehe project_hybridbot Memory.",
+    "market_sense": {
+        "entropy_window": 20,
+        "entropy_bins": 10,
+        "min_entropy_drop": 0.07123603083305,
+        "min_energy_rise": 0.20365966787381798,
+        "atr_period": 14,
+        "atr_sl_multiplier": 1.4126716321333688,
+        "atr_tp_multiplier": 3.5219156608862296,
+        "exit_mode": "atr",
+        "exit_seq_len": 12,
+        "exit_rr_ratio": 1.543628501394744,
+        "sr_pivot_period": 10,
+        "sr_zone_atr_width": 0.5,
+        "sr_min_strength": 2,
+        "sr_max_zones": 6,
+        "sr_proximity_atr": 1.5,
+        "envelope_ma_period": 20,
+        "envelope_pct": 0.05584865714667943,
+        "ear_h_window": 12,
+        "ear_base_pct": 0.002016870312465136,
+        "ear_k_entropy": 0.4932085738850006,
+        "ear_trend_min_bricks": 2,
+        "min_score": 0.4849739605630406,
+        "weights": {
+            "mers_trigger": 0.5227471249894434,
+            "sr_confluence": 0.07035354072514789,
+            "envelope_confluence": 0.006304556091174295,
+            "ear_confluence": 0.21554730429502886,
+            "volume_confirmation": 0.1850474738992055
+        }
+    },
+    "max_hold_candles": 500,
+    "costs": {
+        "taker_fee_pct": 0.06,
+        "slippage_pct": 0.05
+    }
+}

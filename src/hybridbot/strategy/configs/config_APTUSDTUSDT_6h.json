@@ -1,0 +1,47 @@
+{
+    "market": {
+        "symbol": "APT/USDT:USDT",
+        "timeframe": "6h"
+    },
+    "market_sense": {
+        "sr_pivot_period": 10,
+        "sr_zone_atr_width": 0.5,
+        "sr_min_strength": 2,
+        "sr_proximity_atr": 1.5,
+        "envelope_ma_period": 20,
+        "ear_h_window": 12,
+        "ear_trend_min_bricks": 2,
+        "min_entropy_drop": 0.014603532148622415,
+        "min_energy_rise": 0.16102568852024038,
+        "atr_sl_multiplier": 2.997813222409019,
+        "atr_tp_multiplier": 4.13701278457605,
+        "exit_mode": "structural",
+        "exit_seq_len": 7,
+        "exit_rr_ratio": 1.1853071496551602,
+        "envelope_pct": 0.012419248886437464,
+        "ear_base_pct": 0.009866989068048239,
+        "ear_k_entropy": 1.8497747517544925,
+        "min_score": 0.4517287503550821,
+        "weights": {
+            "mers_trigger": 0.2842146446817511,
+            "sr_confluence": 0.014509658509067698,
+            "envelope_confluence": 0.32625258976372923,
+            "ear_confluence": 0.2174418503995584,
+            "volume_confirmation": 0.15758125664589348
+        }
+    },
+    "risk": {
+        "margin_mode": "isolated",
+        "risk_per_trade_pct": 0.52,
+        "leverage": 9
+    },
+    "_meta": {
+        "pnl_pct": 24.8,
+        "optimized_at": "2026-09-11T19:21:51",
+        "train_start": "2023-07-17",
+        "train_end": "2026-07-17",
+        "oos_start": "2026-07-30",
+        "oos_end": "2026-09-24",
+        "oos_pnl_pct": 2.5
+    }
+}

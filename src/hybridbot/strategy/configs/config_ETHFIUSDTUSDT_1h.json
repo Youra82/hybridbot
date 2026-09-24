@@ -1,0 +1,47 @@
+{
+    "market": {
+        "symbol": "ETHFI/USDT:USDT",
+        "timeframe": "1h"
+    },
+    "market_sense": {
+        "sr_pivot_period": 10,
+        "sr_zone_atr_width": 0.5,
+        "sr_min_strength": 2,
+        "sr_proximity_atr": 1.5,
+        "envelope_ma_period": 20,
+        "ear_h_window": 12,
+        "ear_trend_min_bricks": 2,
+        "min_entropy_drop": 0.040996988626062186,
+        "min_energy_rise": 0.17872401059196047,
+        "atr_sl_multiplier": 1.4525873051305136,
+        "atr_tp_multiplier": 4.234953213548546,
+        "exit_mode": "structural",
+        "exit_seq_len": 7,
+        "exit_rr_ratio": 1.6718257438285022,
+        "envelope_pct": 0.015909467682200983,
+        "ear_base_pct": 0.019651009150156697,
+        "ear_k_entropy": 0.7115784313513334,
+        "min_score": 0.47518639080430447,
+        "weights": {
+            "mers_trigger": 0.29790236765750566,
+            "sr_confluence": 0.24137432781182663,
+            "envelope_confluence": 0.11430064820798765,
+            "ear_confluence": 0.26138896203443746,
+            "volume_confirmation": 0.0850336942882426
+        }
+    },
+    "risk": {
+        "margin_mode": "isolated",
+        "risk_per_trade_pct": 1.49,
+        "leverage": 18
+    },
+    "_meta": {
+        "pnl_pct": 16.54,
+        "optimized_at": "2026-09-11T19:54:43",
+        "train_start": "2025-07-16",
+        "train_end": "2026-07-17",
+        "oos_start": "2026-07-30",
+        "oos_end": "2026-09-24",
+        "oos_pnl_pct": 1.1
+    }
+}

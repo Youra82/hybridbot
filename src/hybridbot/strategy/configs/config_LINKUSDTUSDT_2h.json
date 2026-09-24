@@ -1,0 +1,47 @@
+{
+    "market": {
+        "symbol": "LINK/USDT:USDT",
+        "timeframe": "2h"
+    },
+    "market_sense": {
+        "sr_pivot_period": 10,
+        "sr_zone_atr_width": 0.5,
+        "sr_min_strength": 2,
+        "sr_proximity_atr": 1.5,
+        "envelope_ma_period": 20,
+        "ear_h_window": 12,
+        "ear_trend_min_bricks": 2,
+        "min_entropy_drop": 0.10088944193212766,
+        "min_energy_rise": 0.0573646900865739,
+        "atr_sl_multiplier": 1.9266704410470648,
+        "atr_tp_multiplier": 2.179350038997982,
+        "exit_mode": "atr",
+        "exit_seq_len": 12,
+        "exit_rr_ratio": 1.7094932533995464,
+        "envelope_pct": 0.01517156265091934,
+        "ear_base_pct": 0.01251544142059601,
+        "ear_k_entropy": 0.8159763554054024,
+        "min_score": 0.42880654469653234,
+        "weights": {
+            "mers_trigger": 0.24973023779723172,
+            "sr_confluence": 0.2985363317275549,
+            "envelope_confluence": 0.06729018884420788,
+            "ear_confluence": 0.22723482855820512,
+            "volume_confirmation": 0.1572084130728003
+        }
+    },
+    "risk": {
+        "margin_mode": "isolated",
+        "risk_per_trade_pct": 1.92,
+        "leverage": 11
+    },
+    "_meta": {
+        "pnl_pct": 23.84,
+        "optimized_at": "2026-09-11T20:10:51",
+        "train_start": "2025-01-22",
+        "train_end": "2026-07-17",
+        "oos_start": "2026-07-30",
+        "oos_end": "2026-09-24",
+        "oos_pnl_pct": 2.26
+    }
+}

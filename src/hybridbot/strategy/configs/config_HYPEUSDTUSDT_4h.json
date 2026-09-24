@@ -1,0 +1,47 @@
+{
+    "market": {
+        "symbol": "HYPE/USDT:USDT",
+        "timeframe": "4h"
+    },
+    "market_sense": {
+        "sr_pivot_period": 10,
+        "sr_zone_atr_width": 0.5,
+        "sr_min_strength": 2,
+        "sr_proximity_atr": 1.5,
+        "envelope_ma_period": 20,
+        "ear_h_window": 12,
+        "ear_trend_min_bricks": 2,
+        "min_entropy_drop": 0.061378627752756564,
+        "min_energy_rise": 0.04165806256838823,
+        "atr_sl_multiplier": 0.9443446412414815,
+        "atr_tp_multiplier": 3.9488301031964856,
+        "exit_mode": "atr",
+        "exit_seq_len": 10,
+        "exit_rr_ratio": 1.5950266302630336,
+        "envelope_pct": 0.012902894807130636,
+        "ear_base_pct": 0.00695828856644766,
+        "ear_k_entropy": 0.8464455432594846,
+        "min_score": 0.45827787337568104,
+        "weights": {
+            "mers_trigger": 0.27478916545986254,
+            "sr_confluence": 0.33498041051239963,
+            "envelope_confluence": 0.0794052128174484,
+            "ear_confluence": 0.26650257372368075,
+            "volume_confirmation": 0.044322637486608495
+        }
+    },
+    "risk": {
+        "margin_mode": "isolated",
+        "risk_per_trade_pct": 2.52,
+        "leverage": 18
+    },
+    "_meta": {
+        "pnl_pct": 108.12,
+        "optimized_at": "2026-09-11T20:06:20",
+        "train_start": "2024-07-16",
+        "train_end": "2026-07-17",
+        "oos_start": "2026-07-30",
+        "oos_end": "2026-09-24",
+        "oos_pnl_pct": 7.42
+    }
+}

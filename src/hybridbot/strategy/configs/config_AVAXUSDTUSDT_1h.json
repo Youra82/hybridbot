@@ -1,0 +1,47 @@
+{
+    "market": {
+        "symbol": "AVAX/USDT:USDT",
+        "timeframe": "1h"
+    },
+    "market_sense": {
+        "sr_pivot_period": 10,
+        "sr_zone_atr_width": 0.5,
+        "sr_min_strength": 2,
+        "sr_proximity_atr": 1.5,
+        "envelope_ma_period": 20,
+        "ear_h_window": 12,
+        "ear_trend_min_bricks": 2,
+        "min_entropy_drop": 0.09666472975432241,
+        "min_energy_rise": 0.3599398059087705,
+        "atr_sl_multiplier": 1.1904591501465611,
+        "atr_tp_multiplier": 1.7851924001776658,
+        "exit_mode": "atr",
+        "exit_seq_len": 3,
+        "exit_rr_ratio": 1.441672946197728,
+        "envelope_pct": 0.025437092985666706,
+        "ear_base_pct": 0.01644641618638062,
+        "ear_k_entropy": 1.229712408659143,
+        "min_score": 0.47553703420910276,
+        "weights": {
+            "mers_trigger": 0.20216083107639293,
+            "sr_confluence": 0.19770413086805783,
+            "envelope_confluence": 0.211635090717073,
+            "ear_confluence": 0.22660336687554364,
+            "volume_confirmation": 0.16189658046293265
+        }
+    },
+    "risk": {
+        "margin_mode": "isolated",
+        "risk_per_trade_pct": 1.99,
+        "leverage": 15
+    },
+    "_meta": {
+        "pnl_pct": 97.38,
+        "optimized_at": "2026-09-24T17:37:53",
+        "train_start": "2025-07-29",
+        "train_end": "2026-07-30",
+        "oos_start": "2026-07-30",
+        "oos_end": "2026-09-24",
+        "oos_pnl_pct": 5.31
+    }
+}

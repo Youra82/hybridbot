@@ -1,0 +1,47 @@
+{
+    "market": {
+        "symbol": "NIL/USDT:USDT",
+        "timeframe": "1h"
+    },
+    "market_sense": {
+        "sr_pivot_period": 10,
+        "sr_zone_atr_width": 0.5,
+        "sr_min_strength": 2,
+        "sr_proximity_atr": 1.5,
+        "envelope_ma_period": 20,
+        "ear_h_window": 12,
+        "ear_trend_min_bricks": 2,
+        "min_entropy_drop": 0.04263359430528646,
+        "min_energy_rise": 0.13534930961531702,
+        "atr_sl_multiplier": 1.601967432152683,
+        "atr_tp_multiplier": 2.9847924771702843,
+        "exit_mode": "atr",
+        "exit_seq_len": 5,
+        "exit_rr_ratio": 2.7466651806459677,
+        "envelope_pct": 0.05760199661734514,
+        "ear_base_pct": 0.003953969591310362,
+        "ear_k_entropy": 1.479550714640258,
+        "min_score": 0.6053724380778202,
+        "weights": {
+            "mers_trigger": 0.532859090848101,
+            "sr_confluence": 0.09582873746465066,
+            "envelope_confluence": 0.019950073946697684,
+            "ear_confluence": 0.2771695486545027,
+            "volume_confirmation": 0.07419254908604793
+        }
+    },
+    "risk": {
+        "margin_mode": "isolated",
+        "risk_per_trade_pct": 1.36,
+        "leverage": 14
+    },
+    "_meta": {
+        "pnl_pct": 29.03,
+        "optimized_at": "2026-09-24T16:38:31",
+        "train_start": "2025-07-29",
+        "train_end": "2026-07-30",
+        "oos_start": "2026-07-30",
+        "oos_end": "2026-09-24",
+        "oos_pnl_pct": 17.08
+    }
+}
