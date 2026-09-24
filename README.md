@@ -75,6 +75,12 @@ Zwei geprüfte Kandidaten wurden **bewusst ausgeschlossen**:
 
 ![market_sense Signal-Fusion](docs/concept_market_sense.png)
 
+Am Chart: eine S/R-Zone (stbot) fällt mit dem unteren Envelope-Band (ltbbot)
+zusammen, eine MERS-Trigger-Kerze (Entropie fällt, Energie/Volumen steigen)
+wird bestätigt → Entry, mit SL/TP als ATR-Vielfachem (`exit_mode: 'atr'`):
+
+![LONG-Signal-Beispiel mit Entry/SL/TP](docs/concept_signal_example.png)
+
 ```
 Kerze
   │

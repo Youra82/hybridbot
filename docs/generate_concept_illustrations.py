@@ -167,6 +167,110 @@ def make_config_pnl_overview():
     print(f'saved {out}')
 
 
+# ============================================================
+# 3) concept_signal_example.png -- Candlestick-Beispiel eines LONG-Signals:
+#    Preis faellt in eine S/R-Zone + unteres Envelope-Band, MERS-Trigger-
+#    Kerze (Entropie faellt/Energie steigt, hohes Volumen) + Bestaetigung
+#    -> Entry, mit SL/TP fuer exit_mode='atr' (mbot, live-proven).
+# ============================================================
+def make_signal_example():
+    candles = [
+        (100.0, 100.3, 99.2, 99.4),
+        (99.4, 99.6, 98.3, 98.5),
+        (98.5, 98.7, 97.4, 97.6),
+        (97.6, 97.8, 96.6, 96.9),
+        (96.9, 97.1, 95.8, 96.0),   # naehert sich S/R-Zone + unterem Envelope-Band
+        (96.0, 96.2, 94.6, 94.8),   # MERS-Trigger-Kerze: langer unterer Docht, hohes Volumen
+        (94.8, 96.1, 94.7, 95.9),   # Bestaetigungskerze (bullisch, schliesst hoch) -> Entry
+        (95.9, 96.6, 95.7, 96.5),
+        (96.5, 97.3, 96.3, 97.2),
+        (97.2, 98.1, 97.0, 98.0),
+        (98.0, 99.0, 97.8, 98.9),
+        (98.9, 100.2, 98.7, 100.0),  # laeuft Richtung TP
+    ]
+    n = len(candles)
+    volumes = [1.0, 0.9, 1.1, 1.0, 1.2, 2.8, 1.6, 1.0, 0.9, 1.0, 1.1, 0.9]
+
+    fig, (ax, axv) = plt.subplots(
+        2, 1, figsize=(13, 8.5), sharex=True,
+        gridspec_kw={'height_ratios': [3.2, 1]})
+    fig.patch.set_facecolor(BG)
+    for a in (ax, axv):
+        a.set_facecolor(BG)
+        a.tick_params(colors=MUTED, labelsize=8)
+        for spine in a.spines.values():
+            spine.set_edgecolor(GRID)
+        a.set_xticks([])
+        a.grid(axis='y', color=GRID, linewidth=0.4, zorder=0)
+
+    def candle(i, o, h, l, c):
+        color = GREEN if c >= o else RED
+        ax.plot([i, i], [l, h], color=color, linewidth=1.2, zorder=3)
+        body_bot, body_h = min(o, c), max(abs(c - o), (h - l) * 0.04)
+        ax.add_patch(mpatches.FancyBboxPatch(
+            (i - 0.3, body_bot), 0.6, body_h, boxstyle="square,pad=0",
+            linewidth=0, facecolor=color, zorder=4))
+
+    for i, (o, h, l, c) in enumerate(candles):
+        candle(i, o, h, l, c)
+
+    vol_avg = sum(volumes) / len(volumes)
+    for i, v in enumerate(volumes):
+        color = GOLD if v >= 1.2 * vol_avg else (GREEN if candles[i][3] >= candles[i][0] else RED)
+        axv.bar(i, v, width=0.6, color=color, alpha=0.9, zorder=3)
+    axv.axhline(1.2 * vol_avg, color=GOLD, linewidth=1.0, linestyle=':', zorder=2)
+    axv.text(n - 0.4, 1.2 * vol_avg + 0.08, '1.2x Ø-Volumen', color=GOLD, fontsize=8, ha='right')
+    axv.set_ylabel('Volumen', color=MUTED, fontsize=8.5)
+
+    # S/R-Zone (stbot) -- ATR-breite Pivot-Zone
+    sr_top, sr_bottom = 96.3, 95.5
+    ax.add_patch(mpatches.FancyBboxPatch(
+        (-0.5, sr_bottom), n, sr_top - sr_bottom, boxstyle="square,pad=0",
+        linewidth=0.8, edgecolor=BLUE, facecolor=BLUE, alpha=0.15, zorder=1))
+    ax.text(-0.4, sr_top + 0.15, 'S/R-Zone (stbot)', color=BLUE, fontsize=9, fontweight='bold')
+
+    # Envelope-Band (ltbbot) -- % Band um gleitenden Durchschnitt
+    env_lower = [98.6 - i * 0.28 for i in range(n)]
+    ax.plot(range(n), env_lower, color=MUTED, linewidth=1.2, linestyle='--', zorder=2)
+    ax.text(-2.4, env_lower[0] + 0.4, 'Envelope-\nUnterband\n(ltbbot)', color=MUTED, fontsize=8.5,
+            style='italic', ha='left', va='bottom')
+
+    entry_idx, entry_price = 6, 95.9
+    sl_price, tp_price = 94.5, 98.6
+
+    ax.plot(5, 94.6, marker='v', markersize=11, color=GOLD, zorder=6, markeredgecolor=BG)
+    ax.annotate('MERS-Trigger\n(Entropie ↓ + Energie ↑,\nVolumen ≥1.2x)',
+                xy=(5, 94.6), xytext=(2.6, 93.4), color=GOLD, fontsize=8.5, fontweight='bold', ha='center',
+                arrowprops=dict(arrowstyle='->', color=GOLD, lw=1.3))
+
+    ax.plot(entry_idx, entry_price, marker='*', markersize=22, color=GOLD, zorder=6,
+            markeredgecolor=BG, markeredgewidth=0.8)
+    ax.annotate('Bestätigung → Entry\n(Score ≥ min_score)',
+                xy=(entry_idx, entry_price), xytext=(8.0, 93.6), color=GOLD, fontsize=9, fontweight='bold',
+                ha='center', arrowprops=dict(arrowstyle='->', color=GOLD, lw=1.3))
+
+    for price, label, color in [(tp_price, 'TP', GREEN), (entry_price, 'Entry', GOLD), (sl_price, 'SL', RED)]:
+        ax.axhline(price, color=color, linewidth=1.3, linestyle='--', zorder=4)
+        ax.text(n - 0.5 + 0.3, price, f'{label}: {price:.2f}', color=BG, fontsize=9.5, va='center', ha='left',
+                fontweight='bold', zorder=8,
+                bbox=dict(facecolor=color, edgecolor='none', alpha=0.95, pad=3, boxstyle='square,pad=0.3'))
+
+    ax.set_xlim(-2.6, n + 3.2)
+    ax.set_ylim(93.0, 101.0)
+    ax.set_title("hybridbot LONG-Signal-Beispiel (exit_mode='atr'): S/R+Envelope-Zone → MERS-Trigger "
+                 "→ Bestätigung → Entry, SL/TP als ATR-Vielfaches",
+                 color=TEXT, fontsize=12.5, pad=12, fontweight='bold')
+    ax.yaxis.tick_right()
+    ax.set_ylabel('Preis', color=MUTED, fontsize=8.5)
+
+    plt.tight_layout()
+    out = os.path.join(DOCS_DIR, 'concept_signal_example.png')
+    fig.savefig(out, dpi=150, facecolor=fig.get_facecolor(), bbox_inches='tight')
+    plt.close(fig)
+    print(f'saved {out}')
+
+
 if __name__ == '__main__':
     make_market_sense_diagram()
     make_config_pnl_overview()
+    make_signal_example()
