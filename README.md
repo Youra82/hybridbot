@@ -26,12 +26,13 @@ keine Orders. Details siehe [⚠️ Wichtige Hinweise](#️-wichtige-hinweise).
 - [Systemanforderungen](#-systemanforderungen)
 - [Installation](#-installation)
 - [🔴 Live Trading](#-live-trading)
-- [Backtest & Optimizer-Pipeline](#-backtest--optimizer-pipeline)
+- [📊 Interaktives Pipeline-Script](#-interaktives-pipeline-script)
 - [Analyse-Script](#-analyse-script-run_analysissh)
 - [Coin-Screening & Massen-Suche](#-coin-screening--massen-suche)
 - [Auto-Optimizer Verwaltung](#-auto-optimizer-verwaltung)
 - [Monitoring & Ergebnisse](#-monitoring--ergebnisse)
 - [Wartung & Pflege](#️-wartung--pflege)
+- [Tests](#-tests)
 - [Projekt-Struktur](#-projekt-struktur)
 - [⚠️ Wichtige Hinweise](#️-wichtige-hinweise)
 - [Coin & Timeframe Empfehlungen](#-coin--timeframe-empfehlungen)
@@ -140,12 +141,25 @@ schneller.
 git clone https://github.com/Youra82/hybridbot.git
 cd hybridbot
 
+chmod +x install.sh
+./install.sh
+```
+
+`install.sh` installiert die System-Abhängigkeiten (Python 3.12, git, curl,
+jq), legt `.venv` an, installiert `requirements.txt` und setzt
+Ausführungsrechte für alle `.sh`-Skripte. Danach:
+
+```bash
+cp secret.json.example secret.json
+# secret.json mit echten Bitget-Keys ("hybridbot") + Telegram-Daten befüllen
+```
+
+Alternativ manuell (z. B. unter Windows, wo `install.sh` nicht läuft):
+
+```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
-
-cp secret.json.example secret.json
-# secret.json mit echten Bitget-Keys ("hybridbot") + Telegram-Daten befüllen
 ```
 
 `secret.json.example`:
@@ -180,42 +194,87 @@ werden zusätzlich **verwaiste offene Positionen** erkannt (Tracker zeigt
 trotzdem weiter überwacht, statt unbeaufsichtigt zu bleiben.
 
 ```bash
-python master_runner.py
+# Master Runner starten
+cd ~/hybridbot && .venv/bin/python3 master_runner.py
 ```
 
 Per Crontab (Beispiel: alle 15 Minuten, mit `flock` gegen Überlappung):
 
 ```cron
-*/15 * * * * /usr/bin/flock -n /tmp/hybridbot.lock /pfad/zu/hybridbot/.venv/bin/python /pfad/zu/hybridbot/master_runner.py >> /pfad/zu/hybridbot/logs/cron.log 2>&1
+*/15 * * * * /usr/bin/flock -n ~/hybridbot/hybridbot.lock /bin/sh -c "cd ~/hybridbot && .venv/bin/python3 master_runner.py >> ~/hybridbot/logs/cron.log 2>&1"
 ```
 
 `live_trading` ist per Default **`false`** — kein Live-Go, bevor
 Walk-Forward auf dem Hold-out-Test mindestens STABIL liefert (siehe
 [⚠️ Wichtige Hinweise](#️-wichtige-hinweise)).
 
-## 📈 Backtest & Optimizer-Pipeline
+## 📊 Interaktives Pipeline-Script
 
-Einzelner Backtest:
+Einzelner Backtest (ohne Optimierung):
 
 ```bash
 python -m hybridbot.analysis.backtester --symbol "BTC/USDT:USDT" --timeframe "1h" \
     --start_date "2023-01-01" --end_date "2025-01-01"
 ```
 
-Optimizer (Optuna, 70/30-Split, Out-of-Sample-Bestätigung):
+Das eigentliche **`run_pipeline.sh`** automatisiert die komplette
+`market_sense`-Parameter-Optimierung (Optuna, 70/30-Split) für beliebig
+viele Symbol/Timeframe-Kombinationen.
+
+### Features des Pipeline-Scripts
+
+✅ **Interaktive Eingabe** — geführte Menü-Navigation, jeder Schritt hat
+einen sinnvollen Default
+✅ **Optionaler Walk-Forward-OOS-Test** — Optimizer trainiert nur vor einem
+gewählten Stichtag, Backtester prüft danach auf nie gesehenen Daten (ASCII-
+Zeitleiste zeigt Trainings-/Testperiode vor dem Start)
+✅ **Automatische Lookback-Empfehlung** je Timeframe (15m/30m: 180 Tage …
+1d: 1825 Tage)
+✅ **Zwei Optimierungs-Modi**: `strict` (profitabel + Mindest-Winrate +
+MaxDD-Limit) oder `best_profit` (nur MaxDD-Limit, maximiert PnL)
+✅ **Optionale Fixierung** der MERS-Kern-Parameter (`min_entropy_drop`,
+`min_energy_rise`, `exit_mode`) statt sie von Optuna mitoptimieren zu lassen
+✅ **Batch-fähig** — mehrere Coins/Timeframes in einem Lauf, jede Kombination
+läuft nacheinander automatisch durch
+
+### Verwendung
+
+```bash
+chmod +x run_pipeline.sh
+./run_pipeline.sh
+```
+
+Ablauf der Eingabeaufforderungen (alle mit Default bei Enter):
+
+1. **Alte Configs löschen?** (j/n, Standard n) — kompletter Neustart der
+   Optimierung. Es gibt **keinen separaten `cleanup`-Befehl** — das ist
+   diese erste interaktive Ja/Nein-Frage selbst.
+2. Handelspaar(e) + Zeitfenster (leer = automatisch aus `settings.json`)
+3. Optionales OOS-Startdatum für den Walk-Forward-Test (leer = Standard-Modus
+   ohne OOS-Split)
+4. Startdatum oder `a` für automatische Lookback-Berechnung
+5. Startkapital, CPU-Kerne, Anzahl Trials
+6. Optimierungs-Modus (`strict`/`best_profit`), Max Drawdown %, Min. Win-Rate %
+7. Optional: MERS-Kern-Parameter fixieren (Zahl eingeben) oder frei lassen
+   (Enter → Optuna optimiert)
+
+Am Ende jedes Laufs: `./show_results.sh` zur Kontrolle, `settings.json`
+aktivieren, dann `master_runner.py` starten.
+
+Ergebnis-Configs landen in `src/hybridbot/strategy/configs/`:
+
+```
+src/hybridbot/strategy/configs/
+├── config_LABUSDTUSDT_1h.json
+└── ...
+```
+
+Optimizer (nicht-interaktiv, direkt per CLI):
 
 ```bash
 python -m hybridbot.analysis.optimizer \
     --symbols "BTC/USDT:USDT,ETH/USDT:USDT,SOL/USDT:USDT,XRP/USDT:USDT" \
     --timeframe "1d" --start_date "2020-01-01" --end_date "2026-09-10" --trials 60
-```
-
-Interaktive geführte Pipeline (Venv-Check, Coin/Timeframe-Auswahl,
-Walk-Forward-OOS-Test, Optimizer-Modus `strict`/`best_profit`,
-optionale Parameter-Fixierung):
-
-```bash
-./run_pipeline.sh
 ```
 
 ## 📊 Analyse-Script (`run_analysis.sh`)
@@ -224,7 +283,9 @@ Interaktives Menü mit 19 statistischen Analyse-Modulen. Jedes Modul schreibt
 sein Ergebnis-Chart zusätzlich nach `docs/*_latest.png`:
 
 ```bash
+chmod +x run_analysis.sh
 ./run_analysis.sh
+./run_analysis.sh --no-telegram    # kein Telegram, nur lokale Ausgabe
 ```
 
 | # | Analyse | Zweck |
@@ -284,9 +345,9 @@ Einzel-Configs zusammenstellt — begrenzt auf `max_open_positions` aus
 `settings.json`.
 
 ```bash
-python auto_optimizer_scheduler.py            # normale Prüfung
-python auto_optimizer_scheduler.py --force     # sofort erzwingen
-python run_portfolio_optimizer.py              # manueller Einzellauf
+cd ~/hybridbot && .venv/bin/python3 auto_optimizer_scheduler.py            # normale Prüfung
+cd ~/hybridbot && .venv/bin/python3 auto_optimizer_scheduler.py --force    # sofort erzwingen
+cd ~/hybridbot && .venv/bin/python3 run_portfolio_optimizer.py             # manueller Einzellauf
 ```
 
 Mit `live_trading_settings.use_auto_optimizer_results: true` übernimmt
@@ -299,14 +360,26 @@ der manuell in `settings.json` gepflegten `active_strategies`-Liste.
 ./show_results.sh
 ```
 
-Vier Modi: Einzel-Backtest je Config, manuelle Portfolio-Simulation,
-automatische Portfolio-Optimierung, oder interaktive Candlestick-Charts mit
-Entry/Exit-Markern.
+Fragt zuerst den Modus ab (1-4, Standard 1):
+
+| Modus | Name | Ablauf |
+|---|---|---|
+| 1 | Einzel-Backtest | Fragt Start-/Enddatum (Default: letztes OOS-Startdatum aus `artifacts/results/last_oos_run.json`) und Startkapital ab, simuliert **jede** Config in `strategy/configs/` einzeln nacheinander |
+| 2 | Manuelle Portfolio-Simulation | Wie Modus 1, aber du wählst interaktiv aus, welche Configs gemeinsam ein Portfolio bilden sollen |
+| 3 | Automatische Portfolio-Opt. | Fragt nur Startkapital + Max Drawdown % (kein Datum nötig — OOS-Start wird automatisch erkannt), lässt den Greedy-Optimizer das beste Portfolio zusammenstellen |
+| 4 | Interaktive Charts | Ruft `interactive_chart.py` auf, fragt Datum/Kapital direkt selbst ab, zeigt Candlestick-Charts mit Entry/Exit-Markern |
+
+### Log-Files
+
+```bash
+tail -f logs/cron.log
+```
 
 ## 🛠️ Wartung & Pflege
 
 ```bash
-./update.sh
+chmod +x update.sh
+bash ./update.sh
 ```
 
 Sichert `secret.json` und `settings.json`, holt den neuesten Stand via
@@ -315,6 +388,7 @@ aktualisiert die Pakete — lokale Live-Konfiguration geht dabei nicht
 verloren.
 
 ```bash
+chmod +x push_configs.sh
 ./push_configs.sh
 ```
 
@@ -322,6 +396,19 @@ Listet alle Configs in `strategy/configs/` mit Symbol, Timeframe, Hebel und
 OOS-PnL, committet und pusht sie (z. B. nach einem Optimizer-Lauf auf dem
 Server). Bei Merge-Konflikten in Config-Dateien: lokale Version behalten,
 sofern sie neuer optimiert wurde.
+
+## ✅ Tests
+
+```bash
+chmod +x run_tests.sh
+./run_tests.sh
+```
+
+Aktiviert `.venv` und führt `pytest tests/` aus. **Stand jetzt enthält
+`tests/` nur `__init__.py`, noch keine echten Testfälle** — der Lauf meldet
+entsprechend "Keine Tests gefunden" (Exit-Code 0, kein Fehler). Sobald
+Testdateien für `market_sense.py`/`trade_manager.py` existieren, greift
+dasselbe Script ohne Änderung.
 
 ## 📂 Projekt-Struktur
 
@@ -348,8 +435,10 @@ hybridbot/
 ├── run_analysis.sh                 # 19-Modul-Analyse-Menü
 ├── screen_candidates.py            # Schnelles Vor-Screening
 ├── batch_pipeline.py / hunt_robust.py / reoptimize_calmar.py  # Massen-Suche
-├── show_results.sh                 # Backtest/Portfolio/Chart-Anzeige
+├── show_results.sh                 # Backtest/Portfolio/Chart-Anzeige (4 Modi)
 ├── update.sh / push_configs.sh     # Wartung
+├── run_tests.sh                    # pytest-Wrapper
+├── install.sh                      # Erstinstallation (.venv, requirements, chmod)
 ├── settings.json                   # Watchlist, Risk-Manager, market_sense-Fallback
 ├── secret.json.example             # Vorlage (echte secret.json niemals committen)
 └── docs/                           # README-Illustrationen + *_latest.png-Ergebnisse
